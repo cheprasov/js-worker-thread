@@ -194,7 +194,8 @@ threadSum.exec(2, 3).then((result) => {
     threadSum.close();
 });
 ```
-    
+
+
 #### Class `TimeoutThread`
 The `TimeoutThread` emulates `WorkerThread` via using `setTimeout` function.
 
@@ -231,6 +232,20 @@ threadSum.exec(2, 3).then((result) => {
 });
 ```
 
+
+#### Class `NoopThread`
+The `NoopThread` is a stub and it does nothing. 
+
+##### `static` isSupported(): `boolean`
+Always return `true`;
+
+##### exec(...args): `Promise`
+##### close(): `Promise`
+##### terminate(): `void`
+
+The methods do nothing.
+
+
 #### Error class `WorkerError`
 All thrown error in Web Worker's code will be returned to a `Promise` like instance of `WorkerError`.
 
@@ -259,20 +274,6 @@ threadError.exec(0).then().catch(onError);
 threadError.exec(42).then().catch(onError);
 // DataCloneError: Failed to execute 'postMessage' on 'DedicatedWorkerGlobalScope': #<DedicatedWorkerGlobalScope> could not be cloned.
 ```
-
-The methods do nothing.
-
-#### Class `NoopThread`
-The `NoopThread` is a stub and it does nothing. 
-
-##### `static` isSupported(): `boolean`
-Always return `true`;
-
-##### exec(...args): `Promise`
-##### close(): `Promise`
-##### terminate(): `void`
-
-The methods do nothing.
 
 ## Something does not work
 
