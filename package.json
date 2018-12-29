@@ -2,16 +2,15 @@
   "name": "@cheprasov/worker-thread",
   "version": "0.1.0",
   "author": "Alexander Cheprasov",
-  "description": "",
+  "description": "The WorkerThread wraps a Web Worker with a Promise, also the class creates a worker script on the fly (without having to create separate worker files). You can 'inline' your worker function in the same js file as main logic.",
   "keywords": [
     "Web Worker",
     "Worker",
     "Thread",
     "Blob",
-    "Fileless",
     "Promise"
   ],
-  "main": "dist/module/worker-thread.js",
+  "main": "dist/module.js",
   "license": "MIT",
   "repository": {
     "type": "git",

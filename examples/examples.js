@@ -1,4 +1,4 @@
-import ThreadFactory from '../src/ThreadFactory';
+import { ThreadFactory, TimeoutThread } from '../src/index';
 
 // Simple function for sum
 

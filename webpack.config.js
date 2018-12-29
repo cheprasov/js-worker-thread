@@ -2,10 +2,10 @@ const path = require('path');
 
 const configModule = {
     entry: {
-        'worker-thread.js': './src/ThreadFactory.js',
+        'module.js': './src/index.js',
     },
     output: {
-        path: path.resolve(__dirname, 'dist/module/'),
+        path: path.resolve(__dirname, 'dist/'),
         filename: '[name]',
         libraryTarget: 'commonjs2',
     },
