@@ -139,7 +139,7 @@ const threadSum = ThreadFactory.createThread(
 
 ```
 
-##### `static` static createWorkerThread(function | string, options): `WorkerThread`
+##### `static` createWorkerThread(function | string, options): `WorkerThread`
 The method creates an instance of `WorkerThread` without any checking for support.
 See method `createThread` for description of arguments.  
 
