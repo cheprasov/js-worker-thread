@@ -30,4 +30,5 @@ export default class TimeoutThread implements ThreadInterface {
     terminate(): void {
         this.threadFunc = () => {};
     }
+
 }

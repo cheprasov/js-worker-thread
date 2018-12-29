@@ -80,7 +80,7 @@ describe('WorkerThread', () => {
     describe('_createError', () => {
         it('should create new WorkerError', () => {
             const error = thread._createError({
-                name: 'WrongFooBar',
+                type: 'WrongFooBar',
                 message: 'Foo is not bar',
             });
             expect(error).toBeInstanceOf(WorkerError);
@@ -118,7 +118,7 @@ describe('WorkerThread', () => {
                     status: 'error',
                     promiseId: '42-0',
                     error: {
-                        name: 'SomethingWrong',
+                        type: 'SomethingWrong',
                         message: 'For bar 42',
                     },
                 },
@@ -206,7 +206,7 @@ describe('WorkerThread', () => {
     });
 
     describe('createWorkerBlobFile', () => {
-        const getCode = (func, options): string => {
+        const getCode = (func, options = {}): string => {
             BlobFileFactory.createJavaScriptObjectUrl = jest.fn();
             WorkerThread.createWorkerBlobFile(func, options);
             expect(BlobFileFactory.createJavaScriptObjectUrl).toHaveBeenCalled();
@@ -230,7 +230,13 @@ describe('WorkerThread', () => {
             let workerFuns;
 
             beforeEach(() => {
-                const code = getCode(n => n * 2, {}).replace("'use strict';", '');
+                const code = getCode((n) => {
+                    if (n === 10) {
+                        throw new Error('Foo bar error');
+                    }
+                    return n * 2;
+                }).replace("'use strict';", '');
+
                 workerFuns = Function(
                     `
                         const self = {};
@@ -291,8 +297,109 @@ describe('WorkerThread', () => {
                         status: 'error',
                         promiseId: '42',
                         error: {
-                            name: 'foo',
+                            type: 'foo',
                             message: 'bar',
+                        },
+                    });
+                });
+            });
+
+            describe('self.onmessage', () => {
+                it('should send message with result when command is "exec"', () => {
+                    expect(typeof workerFuns.self.onmessage).toEqual('function');
+                    workerFuns.self.onmessage(
+                        {
+                            data: {
+                                command: 'exec',
+                                promiseId: '42',
+                                args: [22],
+                            },
+                        },
+                    );
+                    expect(workerFuns.self.postMessage).toHaveBeenCalledWith({
+                        status: 'ok',
+                        promiseId: '42',
+                        result: 44,
+                    });
+                });
+
+                it('should close worker when command is "close"', () => {
+                    expect(typeof workerFuns.self.onmessage).toEqual('function');
+                    workerFuns.self.onmessage(
+                        {
+                            data: {
+                                command: 'close',
+                                promiseId: '42',
+                            },
+                        },
+                    );
+                    expect(workerFuns.self.postMessage).toHaveBeenCalledWith({
+                        status: 'ok',
+                        promiseId: '42',
+                        result: true,
+                    });
+                });
+
+                it('should send error when command is wrong', () => {
+                    expect(typeof workerFuns.self.onmessage).toEqual('function');
+                    workerFuns.self.onmessage(
+                        {
+                            data: {
+                                command: 'foo bar',
+                                promiseId: '42',
+                            },
+                        },
+                    );
+                    expect(workerFuns.self.postMessage).toHaveBeenCalledWith({
+                        status: 'error',
+                        promiseId: '42',
+                        error: {
+                            type: 'WorkerCommand',
+                            message: 'Wrong command "foo bar"',
+                        },
+                    });
+                });
+
+                it('should send error when error is thrown', () => {
+                    expect(typeof workerFuns.self.onmessage).toEqual('function');
+                    workerFuns.self.onmessage(
+                        {
+                            data: {
+                                command: 'exec',
+                                promiseId: '42',
+                                args: [10],
+                            },
+                        },
+                    );
+                    expect(workerFuns.self.postMessage).toHaveBeenCalledWith({
+                        status: 'error',
+                        promiseId: '42',
+                        error: {
+                            type: 'Error',
+                            message: 'Foo bar error',
+                        },
+                    });
+                });
+            });
+
+            describe('self.onmessageerror', () => {
+                it('should send error message', () => {
+                    expect(typeof workerFuns.self.onmessageerror).toEqual('function');
+                    workerFuns.self.onmessageerror(
+                        {
+                            data: {
+                                promiseId: '42',
+                            },
+                        },
+                    );
+                    expect(workerFuns.self.postMessage).toHaveBeenCalledWith({
+                        status: 'error',
+                        promiseId: '42',
+                        error: {
+                            type: 'WorkerOnMessageError',
+                            message: 'The onmessageerror event handler of the DedicatedWorkerGlobalScope interface '
+                                + 'is an EventListener, called whenever an MessageEvent of type messageerror is fired '
+                                + 'on the worker—that is, when it receives a message that cannot be deserialized.',
                         },
                     });
                 });

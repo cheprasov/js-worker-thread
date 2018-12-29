@@ -104,7 +104,7 @@ export default class WorkerThread implements ThreadInterface {
                         status: '${STATUS_ERROR}',
                         promiseId: data.promiseId,
                         error: {
-                            name: error.name,
+                            type: error.name || 'Error',
                             message: error.message,
                         }
                     });
@@ -122,7 +122,7 @@ export default class WorkerThread implements ThreadInterface {
                             default:
                                 workerSendError(event.data, {
                                     name: '${ERROR_TYPE_WORKER_WRONG_COMMAND}',
-                                    message: 'Wrong command'
+                                    message: 'Wrong command "' + event.data.command + '"' 
                                 });
                         }
                     } catch (error) {
@@ -162,7 +162,7 @@ export default class WorkerThread implements ThreadInterface {
      * @private
      */
     _createError(errorData: ErrorDataType) {
-        return new WorkerError(errorData.name, errorData.message);
+        return new WorkerError(errorData.type, errorData.message);
     }
 
     /**

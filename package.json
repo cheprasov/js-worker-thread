@@ -3,8 +3,15 @@
   "version": "0.1.0",
   "author": "Alexander Cheprasov",
   "description": "",
-  "keywords": [],
-  "main": "dist/worker-thread.js",
+  "keywords": [
+    "Web Worker",
+    "Worker",
+    "Thread",
+    "Blob",
+    "Fileless",
+    "Promise"
+  ],
+  "main": "dist/module/worker-thread.js",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -35,7 +42,7 @@
     "build": "webpack --mode development",
     "build:watch": "webpack --watch --mode development",
     "flow": "flow",
-    "eslint": "node ./node_modules/.bin/eslint ./app/src/",
+    "eslint": "node ./node_modules/.bin/eslint ./src/",
     "test": "jest"
   }
 }
